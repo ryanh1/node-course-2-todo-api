@@ -1,43 +1,60 @@
 const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');
 
-var data = {
-  id: 10
-};
+const bcrypt = require('bcryptjs')
 
-var token = jwt.sign(data, '123abc');
-console.log(token);
+var password = '123abc!';
+bcrypt.genSalt(10, (err, salt) => {
+  bcrypt.hash(password, salt, (err, hash) => {
+    console.log(hash);
+  });
+});
 
-var decoded = jwt.verify(token, '123abc');
-console.log('decoded', decoded);
+var hashedPassword = '$2a$10$UTqMMO7Fao23Xw03nidlDuCoZ.QBzIcKN.HFm20xi0iGVGikFrPWO';
 
-var message = 'I am user number 3';
-var hash = SHA256(message).toString();
+// bcrypt.compare takes the plain value and the hashed value and tells you if they equal each other.
+// The result res is true or false.  True if they equal each other.  False if they don't.
+bcrypt.compare('password', hashedPassword, (err, res) => {
+  console.log(res);
+})
 
-console.log(`Message: ${message}`);
-console.log(`Hash: ${hash}`);
-
-// What server sends to client
-var data = {
-  id: 4
-};
-
-// What client sends to server
-var token = {
-  data,
-  hash: SHA256(JSON.stringify(data) + 'somesecret').toString()
-}
-
-// Man in the middle manipulating data
-// token.data.id = 5;
-// token.hash = SHA256(JSON.stringify(token.data)).toString();
-
-// Stores the hash of the data that comes back
-var resultHash = SHA256(JSON.stringify(token.data) + 'somesecret').toString();
-
-// Check if data was changed.
-if (resultHash === token.hash) {
-  console.log("Data was not changed.  You can trust it.");
-} else {
-  console.log("Data was changed.  Do not trust!");
-}
+// var data = {
+//   id: 10
+// };
+//
+// var token = jwt.sign(data, '123abc');
+// console.log(token);
+//
+// var decoded = jwt.verify(token, '123abc');
+// console.log('decoded', decoded);
+//
+// var message = 'I am user number 3';
+// var hash = SHA256(message).toString();
+//
+// console.log(`Message: ${message}`);
+// console.log(`Hash: ${hash}`);
+//
+// // What server sends to client
+// var data = {
+//   id: 4
+// };
+//
+// // What client sends to server
+// var token = {
+//   data,
+//   hash: SHA256(JSON.stringify(data) + 'somesecret').toString()
+// }
+//
+// // Man in the middle manipulating data
+// // token.data.id = 5;
+// // token.hash = SHA256(JSON.stringify(token.data)).toString();
+//
+// // Stores the hash of the data that comes back
+// var resultHash = SHA256(JSON.stringify(token.data) + 'somesecret').toString();
+//
+// // Check if data was changed.
+// if (resultHash === token.hash) {
+//   console.log("Data was not changed.  You can trust it.");
+// } else {
+//   console.log("Data was changed.  Do not trust!");
+// }
